@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8n Workflow Localization Platform - ログイン</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .form-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #888;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .tab:hover {
+            background: #f8f9fa;
+        }
+        
+        .form-container {
+            position: relative;
+            min-height: 300px;
+        }
+        
+        .form-panel {
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .form-panel.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status {
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .features {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #666;
+        }
+        
+        .feature-icon {
+            width: 20px;
+            text-align: center;
+            margin-right: 15px;
+            color: #667eea;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 20px;
+                padding: 30px 25px;
+            }
+            
+            .title {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">🌐</div>
+        <h1 class="title">n8n翻訳プラットフォーム</h1>
+        <p class="subtitle">ワークフローの多言語化を簡単に</p>
+        
+        <div class="form-tabs">
+            <div class="tab active" onclick="showTab('login')">ログイン</div>
+            <div class="tab" onclick="showTab('register')">新規登録</div>
+        </div>
+        
+        <div class="form-container">
+            <!-- ログインフォーム -->
+            <div class="form-panel active" id="login-panel">
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="login-email">メールアドレス</label>
+                        <input type="email" id="login-email" required placeholder="user@example.com" value="test@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">パスワード</label>
+                        <input type="password" id="login-password" required placeholder="パスワードを入力" value="password123">
+                    </div>
+                    <button type="submit" class="btn" id="login-btn">
+                        <span id="login-loading" style="display: none;"><div class="loading"></div></span>
+                        ログイン
+                    </button>
+                    <div id="login-status"></div>
+                </form>
+            </div>
+            
+            <!-- 新規登録フォーム -->
+            <div class="form-panel" id="register-panel">
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label for="register-username">ユーザー名</label>
+                        <input type="text" id="register-username" required placeholder="ユーザー名を入力" value="newuser">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">メールアドレス</label>
+                        <input type="email" id="register-email" required placeholder="user@example.com" value="newuser@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">パスワード</label>
+                        <input type="password" id="register-password" required placeholder="パスワードを入力" value="password123">
+                    </div>
+                    <button type="submit" class="btn" id="register-btn">
+                        <span id="register-loading" style="display: none;"><div class="loading"></div></span>
+                        新規登録
+                    </button>
+                    <div id="register-status"></div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🚀</div>
+                <div>高速な翻訳処理</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🌏</div>
+                <div>Google Translate API対応</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <div>翻訳品質管理</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3002';
+        
+        // タブ切り替え
+        function showTab(tabName) {
+            // タブの切り替え
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // パネルの切り替え
+            document.querySelectorAll('.form-panel').forEach(panel => panel.classList.remove('active'));
+            document.getElementById(tabName + '-panel').classList.add('active');
+            
+            // ステータスメッセージをクリア
+            document.getElementById('login-status').innerHTML = '';
+            document.getElementById('register-status').innerHTML = '';
+        }
+        
+        // ログイン処理
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const btn = document.getElementById('login-btn');
+            const loading = document.getElementById('login-loading');
+            const status = document.getElementById('login-status');
+            
+            // UI状態更新
+            btn.disabled = true;
+            loading.style.display = 'inline-block';
+            status.innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // トークンを保存
+                    localStorage.setItem('accessToken', data.accessToken);
+                    localStorage.setItem('refreshToken', data.refreshToken || '');
+                    localStorage.setItem('user', JSON.stringify({
+                        id: data.user.id,
+                        username: data.user.username,
+                        email: data.user.email
+                    }));
+                    
+                    showStatus('login-status', 'ログイン成功！作業領域に移動しています...', 'success');
+                    
+                    // 2秒後に作業領域に遷移
+                    setTimeout(() => {
+                        window.location.href = 'workspace.html';
+                    }, 2000);
+                } else {
+                    showStatus('login-status', `ログイン失敗: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus('login-status', `接続エラー: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+        
+        // 新規登録処理
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('register-username').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const btn = document.getElementById('register-btn');
+            const loading = document.getElementById('register-loading');
+            const status = document.getElementById('register-status');
+            
+            // UI状態更新
+            btn.disabled = true;
+            loading.style.display = 'inline-block';
+            status.innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // トークンを保存
+                    localStorage.setItem('accessToken', data.accessToken);
+                    localStorage.setItem('refreshToken', data.refreshToken || '');
+                    localStorage.setItem('user', JSON.stringify({
+                        id: data.user.id,
+                        username: data.user.username,
+                        email: data.user.email
+                    }));
+                    
+                    showStatus('register-status', '登録成功！作業領域に移動しています...', 'success');
+                    
+                    // 2秒後に作業領域に遷移
+                    setTimeout(() => {
+                        window.location.href = 'workspace.html';
+                    }, 2000);
+                } else {
+                    showStatus('register-status', `登録失敗: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus('register-status', `接続エラー: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+        
+        // ステータス表示
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        // ページロード時の処理
+        window.onload = function() {
+            // 既にログイン済みの場合は作業領域に遷移
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+                window.location.href = 'workspace.html';
+                return;
+            }
+        };
+    </script>
+</body>
+</html>

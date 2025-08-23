@@ -1,0 +1,103 @@
+{
+  "name": "Customer Data Processing Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "74fae608-f4fd-4ab2-8c52-e3b08e2c9e5b",
+      "name": "Start Processing",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "notes": "This node starts the customer data processing workflow. It receives incoming data from various sources."
+    },
+    {
+      "parameters": {
+        "content": "Welcome to our customer service! How can I help you today?",
+        "description": "Initial greeting message for customers",
+        "placeholder": "Type your message here",
+        "hint": "Please provide detailed information about your inquiry",
+        "notice": "Our support team will respond within 24 hours",
+        "errorMessage": "Failed to process your request. Please try again.",
+        "successMessage": "Your request has been submitted successfully!"
+      },
+      "id": "83a0e847-9d4e-46e4-9e7e-4a5b8c2d9e5f",
+      "name": "Customer Greeting",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "notes": "This node handles the initial customer interaction. It sets up greeting messages and response templates for customer support."
+    },
+    {
+      "parameters": {
+        "systemMessage": "You are a helpful customer service assistant. Always be polite and provide accurate information.",
+        "userMessage": "Customer inquiry: {{$json['message']}}",
+        "promptTemplate": "Please analyze the customer's request and provide a helpful response. Consider their tone and urgency.",
+        "instructions": "1. Read the customer message carefully 2. Identify the main issue 3. Provide clear solutions 4. Ask follow-up questions if needed",
+        "notice": "This AI assistant processes customer inquiries automatically"
+      },
+      "id": "94b1f958-ae5f-57f5-8f8f-5b6c9d3e0f6g",
+      "name": "AI Customer Assistant",
+      "type": "n8n-nodes-base.openai",
+      "typeVersion": 1,
+      "position": [680, 300],
+      "notes": "AI-powered customer service assistant that analyzes inquiries and generates appropriate responses using natural language processing."
+    },
+    {
+      "parameters": {
+        "subject": "Customer Service Response - {{$json['ticket_id']}}",
+        "content": "Dear {{$json['customer_name']}},\n\nThank you for contacting our support team. We have reviewed your inquiry and here is our response:\n\n{{$json['ai_response']}}\n\nIf you need further assistance, please don't hesitate to reach out.\n\nBest regards,\nCustomer Service Team",
+        "template": "professional_response",
+        "memo": "This template is used for all customer email responses"
+      },
+      "id": "a5c2g069-bf6g-68g6-9g9g-6c7d0e4f1h7i",
+      "name": "Email Response Generator",
+      "type": "n8n-nodes-base.email",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "notes": "Generates professional email responses based on AI assistant recommendations. Includes customer personalization and follow-up information."
+    }
+  ],
+  "connections": {
+    "Start Processing": {
+      "main": [
+        [
+          {
+            "node": "Customer Greeting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Customer Greeting": {
+      "main": [
+        [
+          {
+            "node": "AI Customer Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Customer Assistant": {
+      "main": [
+        [
+          {
+            "node": "Email Response Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "description": "Automated customer service workflow that processes inquiries and generates personalized responses"
+  },
+  "createdAt": "2025-08-14T08:00:00.000Z",
+  "updatedAt": "2025-08-14T08:00:00.000Z",
+  "id": "detailed-customer-service-workflow"
+}

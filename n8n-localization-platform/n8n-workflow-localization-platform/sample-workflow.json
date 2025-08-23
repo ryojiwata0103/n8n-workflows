@@ -1,0 +1,60 @@
+{
+  "name": "Sample Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "74fae608-f4fd-4ab2-8c52-e3b08e2c9e5b",
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "content": "Hello World! This is a test workflow."
+      },
+      "id": "83a0e847-9d4e-46e4-9e7e-4a5b8c2d9e5f",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {},
+      "id": "94b1f958-ae5f-57f5-8f8f-5b6c9d3e0f6g",
+      "name": "End",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "End",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "createdAt": "2025-08-14T07:52:00.000Z",
+  "updatedAt": "2025-08-14T07:52:00.000Z",
+  "id": "sample-workflow-001"
+}

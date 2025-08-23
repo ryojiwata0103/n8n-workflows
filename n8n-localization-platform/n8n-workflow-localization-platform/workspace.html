@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8n Workflow Localization Platform - 作業領域</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        
+        .card { 
+            background: white; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+            margin-bottom: 30px; 
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+        
+        .card-header { 
+            background: #f8f9fa; 
+            padding: 25px; 
+            border-bottom: 1px solid #dee2e6; 
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.4em;
+            color: #333;
+        }
+        
+        .card-body { padding: 25px; }
+        
+        .btn { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 12px 24px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            margin: 5px; 
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .btn:hover { 
+            background: #0056b3; 
+            transform: translateY(-1px);
+        }
+        
+        .btn-success { background: #28a745; }
+        .btn-success:hover { background: #1e7e34; }
+        
+        .btn-danger { background: #dc3545; }
+        .btn-danger:hover { background: #c82333; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            color: #333;
+        }
+        
+        .form-group input, .form-group select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid #ddd; 
+            border-radius: 6px; 
+            font-size: 16px; 
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+        
+        .status { 
+            padding: 15px; 
+            border-radius: 6px; 
+            margin: 15px 0; 
+            font-weight: 500;
+        }
+        
+        .status.success { 
+            background: #d4edda; 
+            color: #155724; 
+            border: 1px solid #c3e6cb; 
+        }
+        
+        .status.error { 
+            background: #f8d7da; 
+            color: #721c24; 
+            border: 1px solid #f5c6cb; 
+        }
+        
+        .json-display { 
+            background: #f8f9fa; 
+            border: 1px solid #dee2e6; 
+            border-radius: 6px; 
+            padding: 20px; 
+            font-family: 'Courier New', monospace; 
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            max-height: 400px; 
+            overflow-y: auto; 
+        }
+        
+        .workflow-item {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            background: #fafafa;
+            transition: all 0.3s ease;
+        }
+        
+        .workflow-item:hover {
+            background: #f0f0f0;
+            border-color: #007bff;
+        }
+        
+        .workflow-item h5 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 1.2em;
+        }
+        
+        .workflow-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .translation-form {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top-color: #007bff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>🌐 n8n翻訳プラットフォーム</h1>
+            <div class="user-info">
+                <span class="user-name" id="user-name">ユーザー名</span>
+                <button class="logout-btn" onclick="handleLogout()">ログアウト</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- 統計情報 -->
+        <div class="stats-grid" id="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-workflows">-</div>
+                <div class="stat-label">アップロード済みワークフロー</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-translations">-</div>
+                <div class="stat-label">完了した翻訳</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avg-quality">-</div>
+                <div class="stat-label">平均品質スコア</div>
+            </div>
+        </div>
+
+        <!-- ワークフローアップロード -->
+        <div class="card">
+            <div class="card-header">
+                <span>📄</span>
+                <h3>n8nワークフローアップロード</h3>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>n8n JSONファイル:</label>
+                    <input type="file" id="workflow-file" accept=".json">
+                </div>
+                <button class="btn btn-success" onclick="uploadWorkflow()">
+                    <span id="upload-loading" style="display: none;"><div class="loading"></div></span>
+                    ワークフローアップロード
+                </button>
+                <div id="upload-status"></div>
+            </div>
+        </div>
+
+        <!-- ワークフロー一覧・翻訳実行 -->
+        <div class="card">
+            <div class="card-header">
+                <span>🔄</span>
+                <h3>ワークフロー翻訳</h3>
+            </div>
+            <div class="card-body">
+                <button class="btn" onclick="loadWorkflows()">
+                    <span id="workflows-loading" style="display: none;"><div class="loading"></div></span>
+                    ワークフロー一覧取得
+                </button>
+                <div id="workflows-status"></div>
+                <div id="workflows-list"></div>
+                
+                <!-- 翻訳実行フォーム -->
+                <div class="translation-form" id="translation-form" style="display: none;">
+                    <h4>翻訳設定</h4>
+                    <div class="form-group">
+                        <label>翻訳先言語:</label>
+                        <select id="target-language">
+                            <option value="ja">日本語</option>
+                            <option value="zh">中国語</option>
+                            <option value="ko">韓国語</option>
+                            <option value="es">スペイン語</option>
+                            <option value="fr">フランス語</option>
+                            <option value="de">ドイツ語</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>翻訳エンジン:</label>
+                        <select id="translation-engine">
+                            <option value="google">Google Translate</option>
+                            <option value="deepl">DeepL</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-success" onclick="executeTranslation()">
+                        <span id="translate-loading" style="display: none;"><div class="loading"></div></span>
+                        翻訳実行
+                    </button>
+                    <button class="btn" onclick="closeTranslationForm()">キャンセル</button>
+                    <div id="translation-execute-status"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- n8n連携機能 -->
+        <div class="card">
+            <div class="card-header">
+                <span>🔗</span>
+                <h3>n8n連携</h3>
+            </div>
+            <div class="card-body">
+                <button class="btn" onclick="testN8nConnection()">
+                    <span id="n8n-test-loading" style="display: none;"><div class="loading"></div></span>
+                    n8n接続テスト
+                </button>
+                <div id="n8n-status"></div>
+                <div id="n8n-info" style="display: none; margin-top: 15px;" class="json-display"></div>
+            </div>
+        </div>
+
+        <!-- 翻訳結果表示 -->
+        <div class="card">
+            <div class="card-header">
+                <span>📋</span>
+                <h3>翻訳結果</h3>
+            </div>
+            <div class="card-body">
+                <button class="btn" onclick="loadTranslations()">
+                    <span id="translations-loading" style="display: none;"><div class="loading"></div></span>
+                    翻訳履歴取得
+                </button>
+                <div id="translations-status"></div>
+                <div id="translations-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3002';
+        let currentToken = null;
+        let selectedWorkflowId = null;
+
+        // 認証チェックとユーザー情報表示
+        function checkAuth() {
+            const token = localStorage.getItem('accessToken');
+            const user = localStorage.getItem('user');
+            
+            if (!token || !user) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            currentToken = token;
+            const userData = JSON.parse(user);
+            document.getElementById('user-name').textContent = userData.username;
+            
+            return true;
+        }
+
+        // ログアウト処理
+        function handleLogout() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        // 統計情報取得
+        async function loadStats() {
+            try {
+                const [workflowsRes, translationsRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/v1/workflows`, {
+                        headers: { 'Authorization': `Bearer ${currentToken}` }
+                    }),
+                    fetch(`${API_BASE}/api/v1/translations`, {
+                        headers: { 'Authorization': `Bearer ${currentToken}` }
+                    })
+                ]);
+
+                if (workflowsRes.ok) {
+                    const workflowsData = await workflowsRes.json();
+                    document.getElementById('total-workflows').textContent = workflowsData.workflows.length;
+                }
+
+                if (translationsRes.ok) {
+                    const translationsData = await translationsRes.json();
+                    const completedTranslations = translationsData.translations.filter(t => t.status === 'completed');
+                    document.getElementById('total-translations').textContent = completedTranslations.length;
+                    
+                    if (completedTranslations.length > 0) {
+                        const avgQuality = Math.round(
+                            completedTranslations.reduce((sum, t) => sum + (t.qualityScore || 0), 0) / completedTranslations.length
+                        );
+                        document.getElementById('avg-quality').textContent = avgQuality + '%';
+                    } else {
+                        document.getElementById('avg-quality').textContent = '-';
+                    }
+                }
+            } catch (error) {
+                console.error('統計情報の取得に失敗:', error);
+            }
+        }
+
+        // ワークフローアップロード
+        async function uploadWorkflow() {
+            const fileInput = document.getElementById('workflow-file');
+            const file = fileInput.files[0];
+            const loading = document.getElementById('upload-loading');
+            const status = document.getElementById('upload-status');
+
+            if (!file) {
+                showStatus('upload-status', 'ファイルを選択してください', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            loading.style.display = 'inline-block';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/workflows/upload`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${currentToken}` },
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    showStatus('upload-status', 'ワークフローアップロード成功！', 'success');
+                    fileInput.value = '';
+                    loadStats(); // 統計情報を更新
+                } else {
+                    showStatus('upload-status', `アップロード失敗: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus('upload-status', `アップロードエラー: ${error.message}`, 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // ワークフロー一覧取得
+        async function loadWorkflows() {
+            const loading = document.getElementById('workflows-loading');
+            const status = document.getElementById('workflows-status');
+
+            loading.style.display = 'inline-block';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/workflows`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    showStatus('workflows-status', `${data.workflows.length}件のワークフローを取得`, 'success');
+                    displayWorkflows(data.workflows);
+                } else {
+                    showStatus('workflows-status', `取得失敗: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus('workflows-status', `エラー: ${error.message}`, 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // ワークフロー表示
+        function displayWorkflows(workflows) {
+            const listElement = document.getElementById('workflows-list');
+            if (workflows.length === 0) {
+                listElement.innerHTML = '<p>アップロード済みのワークフローがありません</p>';
+                return;
+            }
+
+            const workflowsHtml = workflows.map(workflow => `
+                <div class="workflow-item">
+                    <h5>${workflow.originalFilename}</h5>
+                    <div class="workflow-meta">
+                        <span><strong>ステータス:</strong> ${getStatusLabel(workflow.status)}</span>
+                        <span><strong>アップロード日時:</strong> ${new Date(workflow.createdAt).toLocaleString('ja-JP')}</span>
+                        <span><strong>抽出テキスト数:</strong> ${workflow.extractedTexts ? workflow.extractedTexts.length : 0}個</span>
+                    </div>
+                    <button class="btn btn-success" onclick="startTranslation('${workflow.id}', '${workflow.originalFilename}')">
+                        日本語に翻訳
+                    </button>
+                </div>
+            `).join('');
+
+            listElement.innerHTML = workflowsHtml;
+        }
+
+        // 翻訳開始
+        function startTranslation(workflowId, filename) {
+            selectedWorkflowId = workflowId;
+            document.getElementById('translation-form').style.display = 'block';
+            showStatus('translation-execute-status', `「${filename}」の翻訳設定`, 'success');
+            
+            // フォームまでスクロール
+            document.getElementById('translation-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 翻訳フォーム閉じる
+        function closeTranslationForm() {
+            document.getElementById('translation-form').style.display = 'none';
+            selectedWorkflowId = null;
+        }
+
+        // 翻訳実行
+        async function executeTranslation() {
+            if (!selectedWorkflowId) {
+                showStatus('translation-execute-status', 'ワークフローが選択されていません', 'error');
+                return;
+            }
+
+            const targetLanguage = document.getElementById('target-language').value;
+            const translationEngine = document.getElementById('translation-engine').value;
+            const loading = document.getElementById('translate-loading');
+
+            loading.style.display = 'inline-block';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/translations/execute`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        workflowId: selectedWorkflowId,
+                        targetLanguage: targetLanguage,
+                        translationEngine: translationEngine
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    showStatus('translation-execute-status', '翻訳処理を開始しました！翻訳履歴で進捗を確認してください', 'success');
+                    closeTranslationForm();
+                    setTimeout(() => {
+                        loadTranslations();
+                        loadStats(); // 統計情報を更新
+                    }, 2000);
+                } else {
+                    showStatus('translation-execute-status', `翻訳開始失敗: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus('translation-execute-status', `エラー: ${error.message}`, 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // 翻訳履歴取得
+        async function loadTranslations() {
+            const loading = document.getElementById('translations-loading');
+
+            loading.style.display = 'inline-block';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/translations`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    showStatus('translations-status', `${data.translations.length}件の翻訳履歴を取得`, 'success');
+                    displayTranslations(data.translations);
+                } else {
+                    showStatus('translations-status', `取得失敗: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus('translations-status', `エラー: ${error.message}`, 'error');
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // 翻訳履歴表示
+        function displayTranslations(translations) {
+            const listElement = document.getElementById('translations-list');
+            if (translations.length === 0) {
+                listElement.innerHTML = '<p>翻訳履歴がありません</p>';
+                return;
+            }
+
+            const translationsHtml = translations.map(translation => `
+                <div class="workflow-item">
+                    <h5>翻訳ID: ${translation.id}</h5>
+                    <div class="workflow-meta">
+                        <span><strong>翻訳先言語:</strong> ${getLanguageLabel(translation.targetLanguage)}</span>
+                        <span><strong>翻訳エンジン:</strong> ${getEngineLabel(translation.translationEngine)}</span>
+                        <span><strong>品質スコア:</strong> ${translation.qualityScore ? translation.qualityScore + '%' : 'N/A'}</span>
+                        <span><strong>作成日時:</strong> ${new Date(translation.createdAt).toLocaleString('ja-JP')}</span>
+                    </div>
+                    <div><strong>ステータス:</strong> <span class="status ${getStatusClass(translation.status)}">${getTranslationStatusLabel(translation.status)}</span></div>
+                    ${translation.status === 'completed' ? 
+                        `<button class="btn btn-success" onclick="downloadTranslation('${translation.id}')">翻訳済みワークフローダウンロード</button>
+                         <button class="btn" style="background: #17a2b8;" onclick="importToN8n('${translation.id}', '${translation.workflow?.originalFilename || 'workflow'}')">n8nにインポート</button>` : ''
+                    }
+                </div>
+            `).join('');
+
+            listElement.innerHTML = translationsHtml;
+        }
+
+        // 翻訳ダウンロード
+        async function downloadTranslation(translationId) {
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/translations/${translationId}/download`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    
+                    // Content-Dispositionヘッダーからファイル名を取得
+                    const contentDisposition = response.headers.get('content-disposition');
+                    let filename = `jp_translated_workflow_${translationId}.json`;
+                    if (contentDisposition) {
+                        const matches = /filename[^;=\n]*=((['"]).*.?\2|[^;\n]*)/.exec(contentDisposition);
+                        if (matches != null && matches[1]) {
+                            filename = matches[1].replace(/['"]/g, '');
+                        }
+                    }
+                    
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    window.URL.revokeObjectURL(url);
+                    showStatus('translations-status', '翻訳済みワークフローをダウンロードしました', 'success');
+                } else {
+                    showStatus('translations-status', 'ダウンロードに失敗しました', 'error');
+                }
+            } catch (error) {
+                showStatus('translations-status', `エラー: ${error.message}`, 'error');
+            }
+        }
+
+        // ヘルパー関数
+        function getStatusLabel(status) {
+            const statusMap = {
+                uploaded: 'アップロード済み',
+                analyzing: '解析中',
+                analyzed: '解析完了',
+                translating: '翻訳中',
+                translated: '翻訳完了',
+                failed: 'エラー'
+            };
+            return statusMap[status] || status;
+        }
+
+        function getTranslationStatusLabel(status) {
+            const statusMap = {
+                pending: '待機中',
+                processing: '処理中',
+                completed: '完了',
+                failed: 'エラー'
+            };
+            return statusMap[status] || status;
+        }
+
+        function getStatusClass(status) {
+            return status === 'completed' ? 'success' : status === 'failed' ? 'error' : 'default';
+        }
+
+        function getLanguageLabel(code) {
+            const languageMap = {
+                ja: '日本語',
+                en: '英語',
+                zh: '中国語',
+                ko: '韓国語',
+                es: 'スペイン語',
+                fr: 'フランス語',
+                de: 'ドイツ語'
+            };
+            return languageMap[code] || code;
+        }
+
+        function getEngineLabel(engine) {
+            return engine === 'google' ? 'Google Translate' : 'DeepL';
+        }
+
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        // n8n接続テスト
+        async function testN8nConnection() {
+            const loading = document.getElementById('n8n-test-loading');
+            const status = document.getElementById('n8n-status');
+            const info = document.getElementById('n8n-info');
+
+            loading.style.display = 'inline-block';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/n8n/test-connection`, {
+                    headers: { 'Authorization': `Bearer ${currentToken}` }
+                });
+
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    showStatus('n8n-status', 'n8n接続成功！', 'success');
+                    info.style.display = 'block';
+                    info.textContent = JSON.stringify(data.data, null, 2);
+                } else {
+                    showStatus('n8n-status', `n8n接続失敗: ${data.message}`, 'error');
+                    info.style.display = 'none';
+                }
+            } catch (error) {
+                showStatus('n8n-status', `n8n接続エラー: ${error.message}`, 'error');
+                info.style.display = 'none';
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        // n8nにワークフローをインポート
+        async function importToN8n(translationId, originalFilename) {
+            const workflowName = prompt(
+                'n8nにインポートするワークフロー名を入力してください:', 
+                `${originalFilename.replace('.json', '')} (日本語版)`
+            );
+            
+            if (!workflowName) return;
+
+            const activate = confirm('インポート後にワークフローをアクティブ化しますか？');
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/n8n/import/${translationId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        workflowName: workflowName,
+                        activate: activate,
+                        overwriteExisting: false
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    const n8nUrl = data.data.n8nUrl;
+                    const message = `n8nインポート成功！\nワークフロー名: ${data.data.workflowName}\nワークフローID: ${data.data.workflowId}`;
+                    alert(message);
+                    
+                    // n8nのワークフローページを開くかユーザーに確認
+                    if (n8nUrl && confirm('n8nでワークフローを確認しますか？')) {
+                        window.open(n8nUrl, '_blank');
+                    }
+                } else {
+                    if (response.status === 409) {
+                        // 名前重複の場合
+                        const suggestions = data.suggestions || [];
+                        let message = `ワークフロー名「${workflowName}」は既に存在します。\n\n`;
+                        if (suggestions.length > 0) {
+                            message += '以下の名前を参考にしてください:\n';
+                            suggestions.forEach((suggestion, index) => {
+                                message += `${index + 1}. ${suggestion}\n`;
+                            });
+                        }
+                        alert(message);
+                    } else {
+                        alert(`n8nインポート失敗: ${data.message}`);
+                    }
+                }
+            } catch (error) {
+                alert(`n8nインポートエラー: ${error.message}`);
+            }
+        }
+
+        // ページ初期化
+        window.onload = function() {
+            if (checkAuth()) {
+                loadStats();
+            }
+        };
+    </script>
+</body>
+</html>

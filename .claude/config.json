@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "project": {
+    "name": "n8n-workflows",
+    "type": "n8n-development",
+    "description": "n8n workflow development environment"
+  },
+  "context": {
+    "focus": "n8n-only",
+    "exclude_general_dev": true
+  }
+}

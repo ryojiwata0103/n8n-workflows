@@ -1,0 +1,1 @@
+# Credential Templates - Configuration examples

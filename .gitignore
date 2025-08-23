@@ -1,0 +1,28 @@
+# n8n specific
+node_modules/
+.env
+*.log
+
+# Credentials and sensitive data
+credentials/*.json
+!credentials/*.template.json
+
+# Temporary files
+.tmp/
+temp/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
