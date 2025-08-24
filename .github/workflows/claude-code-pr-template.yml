@@ -1,0 +1,95 @@
+# Issue からの開発開始時に自動でブランチとPRテンプレートを準備
+
+name: Setup Development Branch from Issue
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  setup-development:
+    if: contains(github.event.label.name, 'ready-for-development')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create development branch
+        run: |
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          BRANCH_NAME="issue-$ISSUE_NUMBER/claude-code-dev"
+          
+          # メインブランチから新しいブランチを作成
+          git checkout -b "$BRANCH_NAME"
+          git push origin "$BRANCH_NAME"
+          
+          echo "✅ Created branch: $BRANCH_NAME"
+
+      - name: Add comment to issue
+        run: |
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          BRANCH_NAME="issue-$ISSUE_NUMBER/claude-code-dev"
+          
+          gh issue comment $ISSUE_NUMBER --body "🚀 **開発準備完了！**
+          
+          開発用ブランチを作成しました: \`$BRANCH_NAME\`
+          
+          ## Claude Code での開発手順
+          1. ローカルでブランチをチェックアウト:
+             \`\`\`bash
+             git fetch origin
+             git checkout $BRANCH_NAME
+             \`\`\`
+          
+          2. Claude Code で開発:
+             \`\`\`bash
+             claude-code \"Fix issue #$ISSUE_NUMBER: ${{ github.event.issue.title }}\"
+             \`\`\`
+          
+          3. 変更をプッシュすると自動でPRが作成されます！
+          
+          Happy coding! 🎉"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+---
+
+# .github/PULL_REQUEST_TEMPLATE.md
+# PR テンプレート（Claude Code用）
+
+## 概要
+<!-- このPRで何を実装/修正したかを簡潔に説明 -->
+
+## 関連Issue
+Closes #<!-- Issue番号 -->
+
+## Claude Code での実装内容
+<!-- Claude Code で指示した内容や生成されたコードの概要 -->
+
+## 変更内容
+- [ ] 新機能追加
+- [ ] バグ修正
+- [ ] リファクタリング
+- [ ] ドキュメント更新
+- [ ] テスト追加
+
+## テスト
+- [ ] 既存のテストが通ることを確認
+- [ ] 新しいテストを追加
+- [ ] 手動テストを実行
+
+## チェックリスト
+- [ ] コードレビューの準備ができている
+- [ ] Issue の要件を満たしている
+- [ ] 適切なラベルが付与されている
+- [ ] 必要に応じてドキュメントを更新
+
+## スクリーンショット（該当する場合）
+<!-- UIの変更がある場合はスクリーンショットを追加 -->
