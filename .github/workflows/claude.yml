@@ -26,8 +26,14 @@ jobs:
       actions: read
     
     steps:
-      - name: 🤖 Claude Code Action
-        uses: anthropics/claude-code-action@v1
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          claude-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🤖 Claude Code Action
+        uses: anthropics/claude-code-action@beta
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}

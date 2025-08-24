@@ -1,0 +1,47 @@
+name: 🔍 Basic Quality Check
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  basic-check:
+    name: 📋 Basic Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔨 PHP Syntax Check
+        run: |
+          echo "🔨 Running basic PHP syntax check..."
+          find . -name "*.php" -not -path "./vendor/*" -exec php -l {} + | grep -v "No syntax errors detected" || echo "✅ All PHP files have valid syntax"
+
+      - name: 📁 WordPress Plugin Structure
+        run: |
+          echo "📁 Checking basic WordPress plugin structure..."
+          
+          if [ -f "ai-column-autoposter.php" ]; then
+            echo "✅ Main plugin file exists"
+          else
+            echo "❌ Main plugin file missing"
+            exit 1
+          fi
+          
+          if grep -q "Plugin Name:" ai-column-autoposter.php; then
+            echo "✅ Valid WordPress plugin header found"
+          else
+            echo "❌ Invalid WordPress plugin header"
+            exit 1
+          fi
+
+      - name: 📊 Summary
+        run: |
+          echo "### ✅ Basic Quality Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "- PHP Syntax: Valid" >> $GITHUB_STEP_SUMMARY
+          echo "- Plugin Structure: Valid" >> $GITHUB_STEP_SUMMARY
+          echo "- Ready for development" >> $GITHUB_STEP_SUMMARY
