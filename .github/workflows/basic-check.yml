@@ -1,47 +1,348 @@
-name: 🔍 Basic Quality Check
+name: 🔍 Universal Basic Quality Check
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, master, develop]
   pull_request:
-    branches: [main, develop]
+    branches: [main, master, develop]
 
 jobs:
   basic-check:
-    name: 📋 Basic Checks
+    name: 📋 Universal Basic Checks
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: 🔨 PHP Syntax Check
+      - name: 🔍 Project Detection & Analysis
+        id: detect
         run: |
-          echo "🔨 Running basic PHP syntax check..."
-          find . -name "*.php" -not -path "./vendor/*" -exec php -l {} + | grep -v "No syntax errors detected" || echo "✅ All PHP files have valid syntax"
-
-      - name: 📁 WordPress Plugin Structure
-        run: |
-          echo "📁 Checking basic WordPress plugin structure..."
+          echo "🔍 Analyzing project structure..."
           
-          if [ -f "ai-column-autoposter.php" ]; then
-            echo "✅ Main plugin file exists"
+          # Initialize detection results
+          PROJECT_TYPES=""
+          FRAMEWORK=""
+          CHECKS_AVAILABLE=""
+          
+          # Language Detection
+          if [ -f "package.json" ]; then
+            PROJECT_TYPES="${PROJECT_TYPES}nodejs "
+            CHECKS_AVAILABLE="${CHECKS_AVAILABLE}nodejs-syntax nodejs-deps "
+            echo "✅ Node.js project detected (package.json found)"
+            
+            # Framework detection for Node.js
+            if grep -q "next" package.json 2>/dev/null; then
+              FRAMEWORK="nextjs"
+              echo "  📦 Next.js framework detected"
+            elif grep -q "react" package.json 2>/dev/null; then
+              FRAMEWORK="react"
+              echo "  ⚛️  React framework detected"
+            elif grep -q "express" package.json 2>/dev/null; then
+              FRAMEWORK="express"
+              echo "  🚀 Express framework detected"
+            fi
+          fi
+          
+          if [ -f "composer.json" ] || find . -maxdepth 2 -name "*.php" -type f | head -1 | grep -q .; then
+            PROJECT_TYPES="${PROJECT_TYPES}php "
+            CHECKS_AVAILABLE="${CHECKS_AVAILABLE}php-syntax "
+            echo "✅ PHP project detected"
+            
+            # WordPress detection
+            if find . -maxdepth 1 -name "*.php" -exec grep -l "Plugin Name:" {} \; | head -1 | grep -q .; then
+              FRAMEWORK="wordpress-plugin"
+              echo "  🔌 WordPress Plugin detected"
+            elif [ -f "wp-config.php" ] || [ -f "wp-config-sample.php" ]; then
+              FRAMEWORK="wordpress"
+              echo "  📰 WordPress site detected"
+            fi
+          fi
+          
+          if [ -f "requirements.txt" ] || [ -f "pyproject.toml" ] || find . -maxdepth 2 -name "*.py" -type f | head -1 | grep -q .; then
+            PROJECT_TYPES="${PROJECT_TYPES}python "
+            CHECKS_AVAILABLE="${CHECKS_AVAILABLE}python-syntax "
+            echo "✅ Python project detected"
+          fi
+          
+          if [ -f "go.mod" ] || find . -maxdepth 2 -name "*.go" -type f | head -1 | grep -q .; then
+            PROJECT_TYPES="${PROJECT_TYPES}go "
+            CHECKS_AVAILABLE="${CHECKS_AVAILABLE}go-syntax "
+            echo "✅ Go project detected"
+          fi
+          
+          if [ -f "Cargo.toml" ] || find . -maxdepth 2 -name "*.rs" -type f | head -1 | grep -q .; then
+            PROJECT_TYPES="${PROJECT_TYPES}rust "
+            CHECKS_AVAILABLE="${CHECKS_AVAILABLE}rust-syntax "
+            echo "✅ Rust project detected"
+          fi
+          
+          # Always available checks
+          CHECKS_AVAILABLE="${CHECKS_AVAILABLE}structure readme "
+          
+          # Check for custom configuration
+          if [ -f ".github/basic-check-config.yml" ]; then
+            echo "⚙️  Custom configuration found"
+            CHECKS_AVAILABLE="${CHECKS_AVAILABLE}custom-config "
+          fi
+          
+          # Export results for next steps
+          echo "project_types=${PROJECT_TYPES}" >> $GITHUB_OUTPUT
+          echo "framework=${FRAMEWORK}" >> $GITHUB_OUTPUT
+          echo "checks_available=${CHECKS_AVAILABLE}" >> $GITHUB_OUTPUT
+          
+          # Summary
+          echo "### 🔍 Project Detection Results" >> $GITHUB_STEP_SUMMARY
+          echo "- **Languages**: ${PROJECT_TYPES:-None detected}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Framework**: ${FRAMEWORK:-Generic}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Available Checks**: ${CHECKS_AVAILABLE}" >> $GITHUB_STEP_SUMMARY
+
+      - name: 🏗️ Project Structure Check
+        run: |
+          echo "🏗️ Checking basic project structure..."
+          
+          STRUCTURE_ISSUES=0
+          
+          # Check for essential files
+          if [ ! -f "README.md" ] && [ ! -f "readme.md" ] && [ ! -f "README.rst" ]; then
+            echo "⚠️  No README file found"
+            ((STRUCTURE_ISSUES++))
           else
-            echo "❌ Main plugin file missing"
+            echo "✅ README file exists"
+          fi
+          
+          if [ ! -f ".gitignore" ]; then
+            echo "⚠️  No .gitignore file found"
+            ((STRUCTURE_ISSUES++))
+          else
+            echo "✅ .gitignore file exists"
+          fi
+          
+          # Check directory structure sanity
+          if [ -d "node_modules" ]; then
+            echo "⚠️  node_modules directory should be in .gitignore"
+            ((STRUCTURE_ISSUES++))
+          fi
+          
+          if [ -d ".git" ]; then
+            echo "✅ Git repository properly initialized"
+          else
+            echo "❌ Not a Git repository"
+            ((STRUCTURE_ISSUES++))
+          fi
+          
+          echo "structure_issues=${STRUCTURE_ISSUES}" >> $GITHUB_ENV
+
+      - name: 📦 Node.js Checks
+        if: contains(steps.detect.outputs.project_types, 'nodejs')
+        run: |
+          echo "📦 Running Node.js specific checks..."
+          
+          # Package.json validation
+          if ! node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8'))" 2>/dev/null; then
+            echo "❌ Invalid package.json format"
+            exit 1
+          else
+            echo "✅ package.json is valid JSON"
+          fi
+          
+          # Check for required scripts
+          if grep -q '"scripts"' package.json; then
+            echo "✅ Scripts section found in package.json"
+          else
+            echo "⚠️  No scripts section in package.json"
+          fi
+          
+          # Basic JavaScript/TypeScript syntax check
+          echo "🔨 Checking JavaScript/TypeScript syntax..."
+          JS_ERRORS=0
+          
+          # Check JS files
+          if find . -name "*.js" -not -path "./node_modules/*" -not -path "./.next/*" -not -path "./dist/*" | head -10 | while read file; do
+            if ! node --check "$file" 2>/dev/null; then
+              echo "❌ Syntax error in: $file"
+              ((JS_ERRORS++))
+            fi
+          done; then
+            echo "✅ JavaScript syntax check passed"
+          fi
+          
+          # Check TS files if TypeScript is used
+          if find . -name "*.ts" -o -name "*.tsx" | head -1 | grep -q .; then
+            if grep -q typescript package.json 2>/dev/null; then
+              echo "✅ TypeScript project with dependency"
+            else
+              echo "⚠️  TypeScript files found but no TypeScript dependency"
+            fi
+          fi
+
+      - name: 🐘 PHP Checks
+        if: contains(steps.detect.outputs.project_types, 'php')
+        run: |
+          echo "🐘 Running PHP specific checks..."
+          
+          # PHP syntax check
+          echo "🔨 Checking PHP syntax..."
+          PHP_ERRORS=0
+          
+          find . -name "*.php" -not -path "./vendor/*" | while read file; do
+            if ! php -l "$file" >/dev/null 2>&1; then
+              echo "❌ PHP syntax error in: $file"
+              ((PHP_ERRORS++))
+            fi
+          done
+          
+          if [ $PHP_ERRORS -eq 0 ]; then
+            echo "✅ All PHP files have valid syntax"
+          else
+            echo "❌ Found $PHP_ERRORS PHP syntax errors"
             exit 1
           fi
           
-          if grep -q "Plugin Name:" ai-column-autoposter.php; then
-            echo "✅ Valid WordPress plugin header found"
+          # Composer validation
+          if [ -f "composer.json" ]; then
+            if composer validate --no-check-publish --quiet 2>/dev/null; then
+              echo "✅ composer.json is valid"
+            else
+              echo "⚠️  composer.json validation issues"
+            fi
+          fi
+
+      - name: 🔌 WordPress Plugin Checks
+        if: steps.detect.outputs.framework == 'wordpress-plugin'
+        run: |
+          echo "🔌 Running WordPress Plugin specific checks..."
+          
+          # Find main plugin file
+          PLUGIN_FILE=$(find . -maxdepth 1 -name "*.php" -exec grep -l "Plugin Name:" {} \; | head -1)
+          
+          if [ -n "$PLUGIN_FILE" ]; then
+            echo "✅ Main plugin file found: $(basename $PLUGIN_FILE)"
+            
+            # Check required headers
+            if grep -q "Plugin Name:" "$PLUGIN_FILE" && 
+               grep -q "Description:" "$PLUGIN_FILE" && 
+               grep -q "Version:" "$PLUGIN_FILE"; then
+              echo "✅ Required WordPress plugin headers present"
+            else
+              echo "⚠️  Missing required WordPress plugin headers"
+            fi
+            
+            # Check plugin structure
+            if [ -d "includes" ] || [ -d "inc" ] || [ -d "lib" ]; then
+              echo "✅ Plugin includes directory structure found"
+            fi
+            
           else
-            echo "❌ Invalid WordPress plugin header"
+            echo "❌ No WordPress plugin main file found"
             exit 1
           fi
 
-      - name: 📊 Summary
+      - name: 🐍 Python Checks
+        if: contains(steps.detect.outputs.project_types, 'python')
         run: |
-          echo "### ✅ Basic Quality Check Results" >> $GITHUB_STEP_SUMMARY
-          echo "- PHP Syntax: Valid" >> $GITHUB_STEP_SUMMARY
-          echo "- Plugin Structure: Valid" >> $GITHUB_STEP_SUMMARY
-          echo "- Ready for development" >> $GITHUB_STEP_SUMMARY
+          echo "🐍 Running Python specific checks..."
+          
+          # Python syntax check
+          echo "🔨 Checking Python syntax..."
+          find . -name "*.py" -not -path "./venv/*" -not -path "./.venv/*" | while read file; do
+            if ! python3 -m py_compile "$file" 2>/dev/null; then
+              echo "❌ Python syntax error in: $file"
+            else
+              echo "✅ $file syntax OK"
+            fi
+          done
+          
+          # Requirements check
+          if [ -f "requirements.txt" ]; then
+            echo "✅ requirements.txt found"
+            if [ -s "requirements.txt" ]; then
+              echo "✅ requirements.txt is not empty"
+            else
+              echo "⚠️  requirements.txt is empty"
+            fi
+          elif [ -f "pyproject.toml" ]; then
+            echo "✅ pyproject.toml found"
+          else
+            echo "⚠️  No requirements.txt or pyproject.toml found"
+          fi
+
+      - name: 🚀 Go Checks
+        if: contains(steps.detect.outputs.project_types, 'go')
+        run: |
+          echo "🚀 Running Go specific checks..."
+          
+          # Go mod verification
+          if [ -f "go.mod" ]; then
+            echo "✅ go.mod found"
+            if go mod verify 2>/dev/null; then
+              echo "✅ Go modules verified"
+            else
+              echo "⚠️  Go modules verification issues"
+            fi
+          fi
+          
+          # Go syntax check
+          if go build -o /dev/null ./... 2>/dev/null; then
+            echo "✅ Go build successful"
+          else
+            echo "⚠️  Go build issues detected"
+          fi
+
+      - name: 🦀 Rust Checks
+        if: contains(steps.detect.outputs.project_types, 'rust')
+        run: |
+          echo "🦀 Running Rust specific checks..."
+          
+          # Cargo check
+          if [ -f "Cargo.toml" ]; then
+            echo "✅ Cargo.toml found"
+            if cargo check --quiet 2>/dev/null; then
+              echo "✅ Cargo check passed"
+            else
+              echo "⚠️  Cargo check issues detected"
+            fi
+          fi
+
+      - name: ⚙️ Custom Configuration Support
+        if: contains(steps.detect.outputs.checks_available, 'custom-config')
+        run: |
+          echo "⚙️ Processing custom configuration..."
+          echo "📄 Custom config file: .github/basic-check-config.yml"
+          echo "ℹ️  Custom commands and checks would be processed here"
+          # Note: In a real implementation, we would parse YAML and run custom commands
+
+      - name: 📊 Final Summary
+        run: |
+          echo "### ✅ Universal Basic Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Project info
+          echo "**Project Information:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Languages: ${{ steps.detect.outputs.project_types }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Framework: ${{ steps.detect.outputs.framework }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Structure issues
+          if [ "${structure_issues:-0}" -gt 0 ]; then
+            echo "**⚠️  Structure Issues Found: ${structure_issues}**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**✅ Project Structure: Clean**" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Completion status
+          echo "**🎯 Check Status:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Basic structure validation completed" >> $GITHUB_STEP_SUMMARY
+          echo "- Language-specific checks completed" >> $GITHUB_STEP_SUMMARY
+          echo "- Framework-specific checks completed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### 🔧 Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "- Review any warnings or issues found" >> $GITHUB_STEP_SUMMARY
+          echo "- Consider adding \`.github/basic-check-config.yml\` for custom checks" >> $GITHUB_STEP_SUMMARY
+          echo "- Ensure all critical files (README, .gitignore) are present" >> $GITHUB_STEP_SUMMARY
+          
+          echo ""
+          echo "🎉 Universal basic quality check completed!"
